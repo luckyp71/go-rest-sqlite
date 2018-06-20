@@ -33,7 +33,10 @@ func main() {
 	r.GET("/customers/:id", getCustomerById)
 	// Insert new customer
 	r.POST("/customers", insertCustomer)
-
+	// Update customer
+	r.PUT("/customers/:id", updateCustomer)
+	// Delete customer
+	r.DELETE("/customers/:id", deleteCustomer)
 	r.Run(":1991")
 }
 
@@ -50,9 +53,9 @@ func getCustomers(c *gin.Context) {
 
 // Get customer by id
 func getCustomerById(c *gin.Context) {
-	id := c.Params.ByName("id")
 	var customer Customer
-	if e := db.Where("id = ?", id).Error; e != nil {
+	id := c.Params.ByName("id")
+	if e := db.Where("id = ?", id).First(&customer).Error; e != nil {
 		c.AbortWithStatus(404)
 		fmt.Println(e)
 	} else {
@@ -66,4 +69,27 @@ func insertCustomer(c *gin.Context) {
 	c.BindJSON(&customer)
 	db.Create(&customer)
 	c.JSON(200, customer)
+}
+
+// Update customer
+func updateCustomer(c *gin.Context) {
+	var customer Customer
+	id := c.Params.ByName("id")
+	if e := db.Where("id = ?", id).First(&customer).Error; e != nil {
+		c.AbortWithStatus(404)
+		fmt.Println(e)
+	} else {
+		c.BindJSON(&customer)
+		db.Save(&customer)
+		c.JSON(200, customer)
+	}
+}
+
+// Delete customer
+func deleteCustomer(c *gin.Context) {
+	var customer Customer
+	id := c.Params.ByName("id")
+	d := db.Where("id = ?", id).Delete(&customer)
+	fmt.Println(d)
+	c.JSON(200, gin.H{"id #" + id: "deleted"})
 }
