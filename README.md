@@ -1,4 +1,4 @@
-<h1>REST API using Go and sqlite</h1>
+<h1>RESTfu web service using Go and sqlite</h1>
 
 <h3>Prerequisites</h3>
 <p>1. <a href="https://golang.org">Go</a></p>
